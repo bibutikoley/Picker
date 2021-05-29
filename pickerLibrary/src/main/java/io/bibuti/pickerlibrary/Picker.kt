@@ -1,14 +1,19 @@
 package io.bibuti.pickerlibrary
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.bibuti.pickerlibrary.databinding.FragmentPickerSheetBinding
+import java.io.File
 
 class Picker(
-    private val context: Context,
+    private val activity: FragmentActivity,
     pickerOptions: List<PickerOption> = listOf(
         PickerOption.CameraImage,
         PickerOption.GalleryImage,
@@ -18,17 +23,18 @@ class Picker(
 ) {
 
     private var bottomSheetDialog: BottomSheetDialog = BottomSheetDialog(
-        context,
+        activity,
         R.style.AppBottomSheetDialogTheme
     )
 
     private var binding: FragmentPickerSheetBinding = FragmentPickerSheetBinding.bind(
         LayoutInflater
-            .from(context)
+            .from(activity)
             .inflate(R.layout.fragment_picker_sheet, null, false)
     )
 
     init {
+        activity.clearCache()
         bottomSheetDialog.setContentView(binding.root)
         binding.cameraTV.apply {
             visibility =
@@ -92,16 +98,32 @@ class Picker(
     }
 
     private fun dispatchPicker(mimeType: MimeType, openCamera: Boolean = false) {
-        if ((mimeType == MimeType.IMAGE) or (mimeType == MimeType.VIDEO)) {
-            if (openCamera) {
-                //launch camera app intent
-            } else {
-                //launch intent
+        val intent = Intent()
+        when (mimeType) {
+            MimeType.IMAGE,
+            MimeType.VIDEO -> {
+                if (openCamera) {
+                    //launch camera app intent
+                    intent.action = if (mimeType == MimeType.IMAGE)
+                        MediaStore.ACTION_IMAGE_CAPTURE
+                    else
+                        MediaStore.ACTION_VIDEO_CAPTURE
+                } else {
+                    //launch intent for gallery
+                    intent.type = mimeType.key
+                    intent.action = Intent.ACTION_GET_CONTENT
+                }
             }
-        } else {
-            //launch intent
+            else -> {
+                //launch intent for others (documents and files)
+                intent.type = mimeType.key
+                intent.action = Intent.ACTION_GET_CONTENT
+            }
         }
-        dismiss()
+        activity.startActivityForResult(
+            Intent.createChooser(intent, null),
+            ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE
+        )
     }
 
     fun show() {
@@ -110,9 +132,39 @@ class Picker(
         bottomSheetDialog.show()
     }
 
-    fun dismiss() {
+    private fun dismiss() {
         if (bottomSheetDialog.isShowing)
             bottomSheetDialog.dismiss()
+    }
+
+    /**
+     * @param requestCode - Request Code from onActivityResult
+     */
+    fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        intent: Intent?,
+        onFileReady: (File?, String?, Boolean) -> Unit
+    ) {
+        when (requestCode) {
+            ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE -> {
+                if (resultCode == Activity.RESULT_OK && intent != null) {
+                    intent.data?.apply {
+                        onFileReady.invoke(null, null, true)
+                        binding.optionsTV.visibility = View.GONE
+                        binding.processingTV.visibility = View.VISIBLE
+                        activity.createFileFromContentUri(this) { file, mimeType ->
+                            binding.optionsTV.visibility = View.VISIBLE
+                            binding.processingTV.visibility = View.GONE
+                            dismiss()
+                            onFileReady.invoke(file, mimeType, false)
+                        }
+                    }
+                } else {
+                    dismiss()
+                }
+            }
+        }
     }
 
 }
