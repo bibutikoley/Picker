@@ -65,8 +65,7 @@ class Picker(
                     mimeType = if (isVideoPicker)
                         MimeType.VIDEO
                     else
-                        MimeType.IMAGE,
-                    openCamera = false
+                        MimeType.IMAGE
                 )
             }
         }
@@ -74,14 +73,20 @@ class Picker(
             visibility =
                 if (pickerOptions.contains(PickerOption.Documents)) View.VISIBLE else View.GONE
             setOnClickListener {
-                dispatchPicker(mimeType = MimeType.DOCUMENTS, openCamera = false)
+                dispatchPicker(mimeType = MimeType.DOCUMENTS)
             }
         }
         binding.otherFilesTV.apply {
             visibility =
                 if (pickerOptions.contains(PickerOption.OtherFiles)) View.VISIBLE else View.GONE
             setOnClickListener {
-                dispatchPicker(mimeType = MimeType.OTHERS, openCamera = false)
+                dispatchPicker(mimeType = MimeType.OTHERS)
+            }
+        }
+        binding.noOptionsSpecifiedTV.apply {
+            visibility = if (pickerOptions.isNullOrEmpty()) View.VISIBLE else View.GONE
+            setOnClickListener {
+                dismiss()
             }
         }
     }

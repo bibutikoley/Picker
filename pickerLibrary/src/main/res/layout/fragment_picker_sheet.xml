@@ -50,4 +50,10 @@
         app:drawableStartCompat="@drawable/ic_file"
         android:text="Other Files" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/no_options_specified_TV"
+        style="@style/BottomSheetItem"
+        android:gravity="center"
+        android:text="No options configured" />
+
 </LinearLayout>
