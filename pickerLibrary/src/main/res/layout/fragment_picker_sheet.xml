@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="8dp">
+
+    <FrameLayout
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_gravity="center"
+            android:background="@android:color/black"
+            android:layout_width="80dp"
+            android:layout_height="2dp"/>
+
+    </FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/camera_TV"
+        style="@style/BottomSheetItem"
+        app:drawableStartCompat="@drawable/ic_camera"
+        android:text="Capture Image" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/record_video_TV"
+        style="@style/BottomSheetItem"
+        app:drawableStartCompat="@drawable/ic_video_camera"
+        android:text="Record Video" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/gallery_TV"
+        style="@style/BottomSheetItem"
+        app:drawableStartCompat="@drawable/ic_gallery_image"
+        android:text="Gallery" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/document_TV"
+        style="@style/BottomSheetItem"
+        app:drawableStartCompat="@drawable/ic_document"
+        android:text="Document" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/other_files_TV"
+        style="@style/BottomSheetItem"
+        app:drawableStartCompat="@drawable/ic_file"
+        android:text="Other Files" />
+
+</LinearLayout>
