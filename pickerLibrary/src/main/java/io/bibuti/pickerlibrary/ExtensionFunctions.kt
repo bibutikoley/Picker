@@ -38,39 +38,45 @@ fun Boolean?.executeIfTrue(content: () -> Unit) {
  */
 fun Context.createFileFromContentUri(contentUri: Uri, onFileReady: (File, String?) -> Unit) {
     this.contentResolver?.let { contentResolver ->
-        contentResolver.query(contentUri, null, null, null, null)?.use { cursor ->
+        try {
+            contentResolver.query(contentUri, null, null, null, null)?.use { cursor ->
 
-            //Step 1: Obtain/Create file name with extension
-            cursor.moveToFirst()
-            var name = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-            if (name.isNullOrEmpty()) {
-                MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(contentUri))?.let { extension ->
-                    name = UUID.randomUUID().toString().plus(".$extension")
+                //Step 1: Obtain/Create file name with extension
+                cursor.moveToFirst()
+                var name = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                if (name.isNullOrEmpty()) {
+                    MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(contentUri))?.let { extension ->
+                        name = UUID.randomUUID().toString().plus(".$extension")
+                    }
                 }
-            }
-            if (name.isNullOrEmpty()) {
-                Log.e(TAG, "createFileFromContentUri: error creating name for the file", )
-                return@let
-            }
-
-            //Step 2: Create a temp file
-            val attachmentFile = File(cacheDir, name)
-            //val attachmentFile = File(getAttachmentCacheDirectory().plus(name))
-            this.contentResolver.openInputStream(contentUri)?.use { inputStream ->
-                FileOutputStream(attachmentFile).use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-                //file is now created and ready now..
-
-                var mimeType: String? = attachmentFile.toURI().toURL()?.openConnection()?.contentType
-                val mediaType = mimeType.toString().split("/").firstOrNull()
-                if (mediaType.isNotNull() && mediaType == "application") {
-                    mimeType = mediaType.plus("/").plus(attachmentFile.extension)
+                if (name.isNullOrEmpty()) {
+                    Log.e(TAG, "createFileFromContentUri: error creating name for the file", )
+                    return@let
                 }
 
-                //Send File and mime type back to caller function
-                onFileReady.invoke(attachmentFile, mimeType)
+                //Step 2: Create a temp file
+                val attachmentFile = File(cacheDir, name)
+                //val attachmentFile = File(getAttachmentCacheDirectory().plus(name))
+                this.contentResolver.openInputStream(contentUri)?.use { inputStream ->
+                    FileOutputStream(attachmentFile).use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                    //file is now created and ready now..
+
+                    var mimeType: String? = attachmentFile.toURI().toURL()?.openConnection()?.contentType
+                    val mediaType = mimeType.toString().split("/").firstOrNull()
+                    if (mediaType.isNotNull() && mediaType == "application") {
+                        mimeType = mediaType.plus("/").plus(attachmentFile.extension)
+                    }
+
+                    //Send File and mime type back to caller function
+                    onFileReady.invoke(attachmentFile, mimeType)
+                }
             }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
