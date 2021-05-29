@@ -1,8 +1,11 @@
+@file:Suppress("DEPRECATION")
+
 package io.bibuti.pickerlibrary
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -27,16 +30,20 @@ class Picker(
         R.style.AppBottomSheetDialogTheme
     )
 
+    @SuppressLint("InflateParams")
     private var binding: FragmentPickerSheetBinding = FragmentPickerSheetBinding.bind(
         LayoutInflater
             .from(activity)
             .inflate(R.layout.fragment_picker_sheet, null, false)
     )
 
+    private var imageCapturedFromCamera = false
     init {
         activity.clearCache()
+        imageCapturedFromCamera = false
         bottomSheetDialog.setContentView(binding.root)
         binding.cameraTV.apply {
+            imageCapturedFromCamera = true
             visibility =
                 if (pickerOptions.contains(PickerOption.CameraImage)) View.VISIBLE else View.GONE
             setOnClickListener {
@@ -133,6 +140,7 @@ class Picker(
     }
 
     private fun dismiss() {
+        imageCapturedFromCamera = false
         if (bottomSheetDialog.isShowing)
             bottomSheetDialog.dismiss()
     }
@@ -158,6 +166,21 @@ class Picker(
                             binding.processingTV.visibility = View.GONE
                             dismiss()
                             onFileReady.invoke(file, mimeType, false)
+                        }
+                    }
+                    if (imageCapturedFromCamera) {
+                        intent.extras?.get("data")?.apply {
+                            (this as? Bitmap)?.let { bitmap ->
+                                onFileReady.invoke(null, null, true)
+                                binding.optionsTV.visibility = View.GONE
+                                binding.processingTV.visibility = View.VISIBLE
+                                activity.createFileFromBitmap(bitmap) { file, mimeType ->
+                                    binding.optionsTV.visibility = View.VISIBLE
+                                    binding.processingTV.visibility = View.GONE
+                                    dismiss()
+                                    onFileReady.invoke(file, mimeType, false)
+                                }
+                            }
                         }
                     }
                 } else {

@@ -1,6 +1,7 @@
 package io.bibuti.pickerlibrary
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
@@ -8,6 +9,8 @@ import android.webkit.MimeTypeMap
 import io.bibuti.pickerlibrary.ConstantsHolder.TAG
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.lang.Exception
 import java.util.*
 
 
@@ -22,6 +25,12 @@ fun Any?.isNull(): Boolean {
 
 fun Any?.isNotNull(): Boolean {
     return this != null
+}
+
+fun Boolean?.executeIfTrue(content: () -> Unit) {
+    if (this == true) {
+        content.invoke()
+    }
 }
 
 /**
@@ -63,6 +72,22 @@ fun Context.createFileFromContentUri(contentUri: Uri, onFileReady: (File, String
                 onFileReady.invoke(attachmentFile, mimeType)
             }
         }
+    }
+}
+
+fun Context.createFileFromBitmap(bitmap: Bitmap, onFileReady: (File, String) -> Unit) {
+    try {
+        //Step 1: Create a temp file
+        val attachmentFile = File(cacheDir, "${System.currentTimeMillis()}.png")
+        FileOutputStream(attachmentFile).use { outputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, outputStream)
+            //Step 2: File is ready
+            onFileReady.invoke(attachmentFile, "image/png")
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
 
