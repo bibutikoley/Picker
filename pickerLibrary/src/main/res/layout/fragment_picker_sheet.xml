@@ -30,31 +30,31 @@
             android:id="@+id/camera_TV"
             style="@style/BottomSheetItem"
             android:text="Capture Image"
-            app:drawableStartCompat="@drawable/ic_camera" />
+            app:drawableStartCompat="@drawable/ic_picker_camera" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/record_video_TV"
             style="@style/BottomSheetItem"
             android:text="Record Video"
-            app:drawableStartCompat="@drawable/ic_video_camera" />
+            app:drawableStartCompat="@drawable/ic_picker_video_camera" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/gallery_TV"
             style="@style/BottomSheetItem"
             android:text="Gallery"
-            app:drawableStartCompat="@drawable/ic_gallery_image" />
+            app:drawableStartCompat="@drawable/ic_picker_gallery_image" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/document_TV"
             style="@style/BottomSheetItem"
             android:text="Document"
-            app:drawableStartCompat="@drawable/ic_document" />
+            app:drawableStartCompat="@drawable/ic_picker_document" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/other_files_TV"
             style="@style/BottomSheetItem"
             android:text="Other Files"
-            app:drawableStartCompat="@drawable/ic_file" />
+            app:drawableStartCompat="@drawable/ic_picker_file" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/no_options_specified_TV"

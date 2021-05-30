@@ -58,8 +58,8 @@ class Picker(
             setCompoundDrawablesWithIntrinsicBounds(
                 if (isVideoPicker) ContextCompat.getDrawable(
                     this.context,
-                    R.drawable.ic_gallery_video
-                ) else ContextCompat.getDrawable(this.context, R.drawable.ic_gallery_image),
+                    R.drawable.ic_picker_gallery_video
+                ) else ContextCompat.getDrawable(this.context, R.drawable.ic_picker_gallery_image),
                 null,
                 null,
                 null
