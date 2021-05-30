@@ -6,10 +6,21 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import io.bibuti.pickerlibrary.Picker
+import io.bibuti.pickerlibrary.PickerOption
 
 class MainActivity : AppCompatActivity() {
 
-    private val picker by lazy { Picker(this@MainActivity) }
+    private val picker by lazy {
+        Picker(
+            activity = this@MainActivity, pickerOptions = listOf(
+                PickerOption.CameraImage,
+                PickerOption.GalleryImage,
+                PickerOption.Documents,
+                PickerOption.OtherFiles
+            )
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -22,7 +33,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        picker.onActivityResult(requestCode, resultCode, data) { generatedFile, mimeType, isProcessing ->
+        picker.onActivityResult(
+            requestCode,
+            resultCode,
+            data
+        ) { generatedFile, mimeType, isProcessing ->
             findViewById<TextView>(R.id.tv)?.apply {
                 text = generatedFile?.name
             }

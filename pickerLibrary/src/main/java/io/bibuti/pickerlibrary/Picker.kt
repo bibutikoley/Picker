@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.bibuti.pickerlibrary.databinding.FragmentPickerSheetBinding
@@ -17,12 +18,8 @@ import java.io.File
 
 class Picker(
     private val activity: FragmentActivity,
-    pickerOptions: List<PickerOption> = listOf(
-        PickerOption.CameraImage,
-        PickerOption.GalleryImage,
-        PickerOption.Documents,
-        PickerOption.OtherFiles
-    )
+    private val fragment: Fragment? = null,
+    pickerOptions: List<PickerOption> = listOf()
 ) {
 
     private var bottomSheetDialog: BottomSheetDialog = BottomSheetDialog(
@@ -127,10 +124,17 @@ class Picker(
                 intent.action = Intent.ACTION_GET_CONTENT
             }
         }
-        activity.startActivityForResult(
-            Intent.createChooser(intent, null),
-            ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE
-        )
+        if (fragment == null) {
+            activity.startActivityForResult(
+                Intent.createChooser(intent, null),
+                ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE
+            )
+        } else {
+            fragment.startActivityForResult(
+                Intent.createChooser(intent, null),
+                ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE
+            )
+        }
     }
 
     fun show() {
