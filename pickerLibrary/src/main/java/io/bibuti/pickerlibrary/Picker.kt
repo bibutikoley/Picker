@@ -40,7 +40,6 @@ class Picker(
         imageCapturedFromCamera = false
         bottomSheetDialog.setContentView(binding.root)
         binding.cameraTV.apply {
-            imageCapturedFromCamera = true
             visibility =
                 if (pickerOptions.contains(PickerOption.CameraImage)) View.VISIBLE else View.GONE
             setOnClickListener {
@@ -102,14 +101,17 @@ class Picker(
     }
 
     private fun dispatchPicker(mimeType: MimeType, openCamera: Boolean = false) {
+        imageCapturedFromCamera = false
         val intent = Intent()
         when (mimeType) {
             MimeType.IMAGE,
             MimeType.VIDEO -> {
                 if (openCamera) {
                     //launch camera app intent
-                    intent.action = if (mimeType == MimeType.IMAGE)
+                    intent.action = if (mimeType == MimeType.IMAGE) {
+                        imageCapturedFromCamera = true
                         MediaStore.ACTION_IMAGE_CAPTURE
+                    }
                     else
                         MediaStore.ACTION_VIDEO_CAPTURE
                 } else {
@@ -144,7 +146,6 @@ class Picker(
     }
 
     private fun dismiss() {
-        imageCapturedFromCamera = false
         if (bottomSheetDialog.isShowing)
             bottomSheetDialog.dismiss()
     }
