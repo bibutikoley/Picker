@@ -19,20 +19,6 @@ object ConstantsHolder {
     const val ACTIVITY_RESULT_REQUEST_CODE = 329
 }
 
-fun Any?.isNull(): Boolean {
-    return this == null
-}
-
-fun Any?.isNotNull(): Boolean {
-    return this != null
-}
-
-fun Boolean?.executeIfTrue(content: () -> Unit) {
-    if (this == true) {
-        content.invoke()
-    }
-}
-
 /**
  * This function returns File and MimeType form contentUri (contentUri is obtained from Intent.data from onActivityResult())
  */
@@ -65,7 +51,7 @@ fun Context.createFileFromContentUri(contentUri: Uri, onFileReady: (File, String
 
                     var mimeType: String? = attachmentFile.toURI().toURL()?.openConnection()?.contentType
                     val mediaType = mimeType.toString().split("/").firstOrNull()
-                    if (mediaType.isNotNull() && mediaType == "application") {
+                    if ((mediaType != null) and (mediaType == "application")) {
                         mimeType = mediaType.plus("/").plus(attachmentFile.extension)
                     }
 
