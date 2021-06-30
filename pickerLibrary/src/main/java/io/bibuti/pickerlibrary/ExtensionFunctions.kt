@@ -51,8 +51,10 @@ fun Context.createFileFromContentUri(contentUri: Uri, onFileReady: (File, String
 
                     var mimeType: String? = attachmentFile.toURI().toURL()?.openConnection()?.contentType
                     val mediaType = mimeType.toString().split("/").firstOrNull()
-                    if ((mediaType != null) and (mediaType == "application")) {
-                        mimeType = mediaType.plus("/").plus(attachmentFile.extension)
+                    mediaType?.apply {
+                        if (this == "application") {
+                            mimeType = mediaType.plus("/").plus(attachmentFile.extension)
+                        }
                     }
 
                     //Send File and mime type back to caller function

@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         ) { generatedFile, mimeType, isProcessing ->
             findViewById<TextView>(R.id.tv)?.apply {
                 generatedFile?.let { file ->
-                    text = file.name
+                    text = file.name + "\nType - $mimeType"
                 }
             }
         }
