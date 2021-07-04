@@ -36,7 +36,7 @@ fun Context.createFileFromContentUri(contentUri: Uri, onFileReady: (File, String
                     }
                 }
                 if (name.isNullOrEmpty()) {
-                    Log.e(TAG, "createFileFromContentUri: error creating name for the file", )
+                    Log.e(TAG, "createFileFromContentUri: error creating name for the file")
                     return@let
                 }
 

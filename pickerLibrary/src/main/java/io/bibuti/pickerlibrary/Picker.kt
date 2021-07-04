@@ -35,20 +35,25 @@ class Picker(
     )
 
     private var imageCapturedFromCamera = false
+
     init {
         activity.clearCache()
         imageCapturedFromCamera = false
         bottomSheetDialog.setContentView(binding.root)
         binding.cameraTV.apply {
-            visibility =
-                if (pickerOptions.contains(PickerOption.CameraImage)) View.VISIBLE else View.GONE
+            visibility = if (pickerOptions.contains(PickerOption.CameraImage))
+                View.VISIBLE
+            else
+                View.GONE
             setOnClickListener {
                 dispatchPicker(mimeType = MimeType.IMAGE, openCamera = true)
             }
         }
         binding.recordVideoTV.apply {
-            visibility =
-                if (pickerOptions.contains(PickerOption.CameraVideo)) View.VISIBLE else View.GONE
+            visibility = if (pickerOptions.contains(PickerOption.CameraVideo))
+                View.VISIBLE
+            else
+                View.GONE
             setOnClickListener {
                 dispatchPicker(mimeType = MimeType.VIDEO, openCamera = true)
             }
@@ -65,10 +70,14 @@ class Picker(
                 null
             )
             visibility =
-                if (pickerOptions.contains(PickerOption.GalleryImage) or pickerOptions.contains(
-                        PickerOption.GalleryVideo
-                    )
-                ) View.VISIBLE else View.GONE
+                if (
+                    pickerOptions.contains(PickerOption.GalleryImage)
+                    or
+                    pickerOptions.contains(PickerOption.GalleryVideo)
+                )
+                    View.VISIBLE
+                else
+                    View.GONE
             setOnClickListener {
                 dispatchPicker(
                     mimeType = if (isVideoPicker)
@@ -79,15 +88,19 @@ class Picker(
             }
         }
         binding.documentTV.apply {
-            visibility =
-                if (pickerOptions.contains(PickerOption.Documents)) View.VISIBLE else View.GONE
+            visibility = if (pickerOptions.contains(PickerOption.Documents))
+                View.VISIBLE
+            else
+                View.GONE
             setOnClickListener {
                 dispatchPicker(mimeType = MimeType.DOCUMENTS)
             }
         }
         binding.otherFilesTV.apply {
-            visibility =
-                if (pickerOptions.contains(PickerOption.OtherFiles)) View.VISIBLE else View.GONE
+            visibility = if (pickerOptions.contains(PickerOption.OtherFiles))
+                View.VISIBLE
+            else
+                View.GONE
             setOnClickListener {
                 dispatchPicker(mimeType = MimeType.OTHERS)
             }
@@ -111,8 +124,7 @@ class Picker(
                     intent.action = if (mimeType == MimeType.IMAGE) {
                         imageCapturedFromCamera = true
                         MediaStore.ACTION_IMAGE_CAPTURE
-                    }
-                    else
+                    } else
                         MediaStore.ACTION_VIDEO_CAPTURE
                 } else {
                     //launch intent for gallery
