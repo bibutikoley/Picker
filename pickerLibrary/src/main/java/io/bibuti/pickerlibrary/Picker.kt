@@ -3,41 +3,40 @@
 package io.bibuti.pickerlibrary
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.bibuti.pickerlibrary.databinding.FragmentPickerSheetBinding
 import java.io.File
 
 class Picker(
-    private val activity: FragmentActivity,
-    private val fragment: Fragment? = null,
-    pickerOptions: List<PickerOption> = listOf()
+    private val context: Context,
+    pickerOptions: List<PickerOption> = listOf(),
 ) {
 
     private var bottomSheetDialog: BottomSheetDialog = BottomSheetDialog(
-        activity,
+        context,
         R.style.AppBottomSheetDialogTheme
     )
 
     @SuppressLint("InflateParams")
     private var binding: FragmentPickerSheetBinding = FragmentPickerSheetBinding.bind(
         LayoutInflater
-            .from(activity)
+            .from(context)
             .inflate(R.layout.fragment_picker_sheet, null, false)
     )
 
     private var imageCapturedFromCamera = false
+    private var result: ActivityResultLauncher<Intent>? = null
 
     init {
-        activity.clearCache()
+        context.clearCache()
         imageCapturedFromCamera = false
         bottomSheetDialog.setContentView(binding.root)
         binding.cameraTV.apply {
@@ -118,7 +117,8 @@ class Picker(
         val intent = Intent()
         when (mimeType) {
             MimeType.IMAGE,
-            MimeType.VIDEO -> {
+            MimeType.VIDEO,
+            -> {
                 if (openCamera) {
                     //launch camera app intent
                     intent.action = if (mimeType == MimeType.IMAGE) {
@@ -139,20 +139,11 @@ class Picker(
                 intent.action = Intent.ACTION_GET_CONTENT
             }
         }
-        if (fragment == null) {
-            activity.startActivityForResult(
-                Intent.createChooser(intent, null),
-                ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE
-            )
-        } else {
-            fragment.startActivityForResult(
-                Intent.createChooser(intent, null),
-                ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE
-            )
-        }
+        result?.launch(intent)
     }
 
-    fun show() {
+    fun show(result: ActivityResultLauncher<Intent>) {
+        this.result = result
         if (bottomSheetDialog.isShowing)
             return
         bottomSheetDialog.show()
@@ -163,46 +154,33 @@ class Picker(
             bottomSheetDialog.dismiss()
     }
 
-    /**
-     * @param requestCode - Request Code from onActivityResult
-     */
-    fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        intent: Intent?,
-        onFileReady: (File?, String?, Boolean) -> Unit
+    fun onResult(
+        intent: Intent,
+        onFileReady: (File?, String?, Boolean) -> Unit,
     ) {
-        when (requestCode) {
-            ConstantsHolder.ACTIVITY_RESULT_REQUEST_CODE -> {
-                if (resultCode == Activity.RESULT_OK && intent != null) {
-                    intent.data?.apply {
-                        onFileReady.invoke(null, null, true)
-                        binding.optionsTV.visibility = View.GONE
-                        binding.processingTV.visibility = View.VISIBLE
-                        activity.createFileFromContentUri(this) { file, mimeType ->
-                            binding.optionsTV.visibility = View.VISIBLE
-                            binding.processingTV.visibility = View.GONE
-                            dismiss()
-                            onFileReady.invoke(file, mimeType, false)
-                        }
+        intent.data?.apply {
+            onFileReady.invoke(null, null, true)
+            binding.optionsTV.visibility = View.GONE
+            binding.processingTV.visibility = View.VISIBLE
+            context.createFileFromContentUri(this) { file, mimeType ->
+                binding.optionsTV.visibility = View.VISIBLE
+                binding.processingTV.visibility = View.GONE
+                dismiss()
+                onFileReady.invoke(file, mimeType, false)
+            }
+        }
+        if (imageCapturedFromCamera) {
+            intent.extras?.get("data")?.apply {
+                (this as? Bitmap)?.let { bitmap ->
+                    onFileReady.invoke(null, null, true)
+                    binding.optionsTV.visibility = View.GONE
+                    binding.processingTV.visibility = View.VISIBLE
+                    context.createFileFromBitmap(bitmap) { file, mimeType ->
+                        binding.optionsTV.visibility = View.VISIBLE
+                        binding.processingTV.visibility = View.GONE
+                        dismiss()
+                        onFileReady.invoke(file, mimeType, false)
                     }
-                    if (imageCapturedFromCamera) {
-                        intent.extras?.get("data")?.apply {
-                            (this as? Bitmap)?.let { bitmap ->
-                                onFileReady.invoke(null, null, true)
-                                binding.optionsTV.visibility = View.GONE
-                                binding.processingTV.visibility = View.VISIBLE
-                                activity.createFileFromBitmap(bitmap) { file, mimeType ->
-                                    binding.optionsTV.visibility = View.VISIBLE
-                                    binding.processingTV.visibility = View.GONE
-                                    dismiss()
-                                    onFileReady.invoke(file, mimeType, false)
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    dismiss()
                 }
             }
         }
