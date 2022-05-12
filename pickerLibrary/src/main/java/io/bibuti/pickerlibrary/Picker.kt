@@ -106,7 +106,7 @@ class Picker(
             }
         }
         binding.noOptionsSpecifiedTV.apply {
-            visibility = if (pickerOptions.isNullOrEmpty()) View.VISIBLE else View.GONE
+            visibility = if (pickerOptions.isEmpty()) View.VISIBLE else View.GONE
             setOnClickListener {
                 dismiss()
             }
@@ -135,6 +135,7 @@ class Picker(
             else -> {
                 //launch intent for others (documents and files)
                 intent.type = mimeType.key
+                //multiple mime types can be selected
                 intent.action = Intent.ACTION_GET_CONTENT
             }
         }

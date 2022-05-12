@@ -1,18 +1,11 @@
 package io.bibuti.picker
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.bibuti.pickerlibrary.ConstantsHolder.TAG
 import io.bibuti.pickerlibrary.Picker
 import io.bibuti.pickerlibrary.PickerOption
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
 
