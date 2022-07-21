@@ -17,6 +17,7 @@ import java.io.File
 
 class Picker(
     private val context: Context,
+    clearCacheByDefault: Boolean = true,
     pickerOptions: List<PickerOption> = listOf(),
 ) {
 
@@ -36,7 +37,9 @@ class Picker(
     private var result: ActivityResultLauncher<Intent>? = null
 
     init {
-        context.clearCache()
+        if (clearCacheByDefault) {
+            context.clearCache()
+        }
         imageCapturedFromCamera = false
         bottomSheetDialog.setContentView(binding.root)
         binding.cameraTV.apply {
